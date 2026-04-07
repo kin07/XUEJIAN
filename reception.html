@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收检管理 - 血液乙醇检验实验室管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0891B2;
+            --primary-light: #22D3EE;
+            --primary-dark: #164E63;
+            --success-color: #059669;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --info-color: #3B82F6;
+            --bg-primary: #ECFEFF;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F1F5F9;
+            --text-primary: #0F172A;
+            --text-secondary: #334155;
+            --text-tertiary: #64748B;
+            --border-color: #E2E8F0;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ECFEFF 0%, #F0F9FF 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-section {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .logo-section h1 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-section p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .menu-container {
+            padding: 16px 0;
+            flex: 1;
+        }
+
+        .menu-section {
+            margin-bottom: 24px;
+        }
+
+        .menu-title {
+            padding: 8px 24px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary-color);
+            border-left-color: var(--primary-light);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(90deg, rgba(8, 145, 178, 0.1) 0%, transparent 100%);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px 32px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header h2 i {
+            color: var(--primary-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: 0 2px 4px rgba(8, 145, 178, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(8, 145, 178, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #DC2626;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* Table Section */
+        .table-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .table-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-badge.processing {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+        }
+
+        .status-badge.completed {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-badge.rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .btn-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-icon.view:hover {
+            background: var(--info-color);
+            border-color: var(--info-color);
+        }
+
+        .btn-icon.edit:hover {
+            background: var(--warning-color);
+            border-color: var(--warning-color);
+        }
+
+        .btn-icon.delete:hover {
+            background: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-icon.print:hover {
+            background: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .form-section-title i {
+            color: var(--primary-color);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group label .required {
+            color: var(--danger-color);
+            margin-left: 4px;
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .form-control:disabled {
+            background: var(--bg-tertiary);
+            cursor: not-allowed;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-group .form-control {
+            flex: 1;
+        }
+
+        .qr-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--primary-color);
+        }
+
+        .qr-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Sub-table styles */
+        .sub-table-container {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .sub-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .sub-table-header h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .sub-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .sub-table th,
+        .sub-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .sub-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .sub-table input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: var(--bg-tertiary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-section">
+                <h1>
+                    <i class="fas fa-flask"></i>
+                    血液乙醇检验<br>实验室管理系统
+                </h1>
+                <p>Blood Alcohol Testing Laboratory Management System</p>
+            </div>
+
+            <div class="menu-container">
+                <div class="menu-section">
+                    <div class="menu-title">检验流程</div>
+                    <a class="menu-item active" href="reception.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>收检管理</span>
+                    </a>
+                    <a class="menu-item" href="preprocess.html">
+                        <i class="fas fa-cogs"></i>
+                        <span>前置处理</span>
+                    </a>
+                    <a class="menu-item" href="sample.html">
+                        <i class="fas fa-vial"></i>
+                        <span>样品管理</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">审核与报告</div>
+                    <a class="menu-item" href="analysis.html">
+                        <i class="fas fa-microscope"></i>
+                        <span>结果审核</span>
+                    </a>
+                    <a class="menu-item" href="report.html">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>报告管理</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">系统管理</div>
+                    <a class="menu-item" href="user.html">
+                        <i class="fas fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                    <a class="menu-item" href="role.html">
+                        <i class="fas fa-user-shield"></i>
+                        <span>角色管理</span>
+                    </a>
+                    <a class="menu-item" href="permission.html">
+                        <i class="fas fa-key"></i>
+                        <span>权限管理</span>
+                    </a>
+                    <a class="menu-item" href="operation_log.html">
+                        <i class="fas fa-history"></i>
+                        <span>操作日志</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="user-profile">
+                <div class="user-info">
+                    <div class="user-avatar">李</div>
+                    <div class="user-details">
+                        <h4>李明</h4>
+                        <p>受理员</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-clipboard-list"></i>
+                    收检管理
+                </h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openModal()">
+                        <i class="fas fa-plus"></i>
+                        收检登记
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label>委托编码</label>
+                        <input type="text" class="form-control" placeholder="输入委托编码">
+                    </div>
+                    <div class="form-group">
+                        <label>受理编码</label>
+                        <input type="text" class="form-control" placeholder="输入受理编码">
+                    </div>
+                    <div class="form-group">
+                        <label>案事件名称</label>
+                        <input type="text" class="form-control" placeholder="输入案事件名称">
+                    </div>
+                    <div class="form-group">
+                        <label>送检日期范围</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>送检人姓名</label>
+                        <input type="text" class="form-control" placeholder="输入送检人姓名">
+                    </div>
+                    <div class="form-group">
+                        <label>样品状态</label>
+                        <select class="form-control">
+                            <option value="">全部</option>
+                            <option value="pending">待收检</option>
+                            <option value="received">已收检</option>
+                            <option value="rejected">拒收</option>
+                            <option value="testing">在检</option>
+                            <option value="completed">已检</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-secondary" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i>
+                        重置
+                    </button>
+                    <button class="btn btn-primary" onclick="searchData()">
+                        <i class="fas fa-search"></i>
+                        查询
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>受检管理</h3>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>受理编码</th>
+                                <th>委托编号</th>
+                                <th>案事件名称</th>
+                                <th>送检人</th>
+                                <th>样品数量</th>
+                                <th>收检状态</th>
+                                <th>送检时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receptionTable">
+                            <tr>
+                                <td><input type="checkbox" class="row-checkbox"></td>
+                                <td><strong>SL202603240001</strong></td>
+                                <td>WT202603240001</td>
+                                <td>交通事故乙醇检测</td>
+                                <td>张警官、李警官</td>
+                                <td>2</td>
+                                <td><span class="status-badge processing">在检</span></td>
+                                <td>2026-03-24 09:30</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewReception('SL202603240001')" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon edit" onclick="editReception('SL202603240001')" title="编辑">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteReception('SL202603240001')" title="删除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn-icon print" onclick="printSampleCode('SL202603240001')" title="打印样品编码">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="row-checkbox"></td>
+                                <td><strong>SL202603240002</strong></td>
+                                <td>WT202603240002</td>
+                                <td>酒后驾驶案件</td>
+                                <td>王警官</td>
+                                <td>1</td>
+                                <td><span class="status-badge completed">已检</span></td>
+                                <td>2026-03-24 10:15</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewReception('SL202603240002')" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon edit" onclick="editReception('SL202603240002')" title="编辑">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteReception('SL202603240002')" title="删除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn-icon print" onclick="printSampleCode('SL202603240002')" title="打印样品编码">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="row-checkbox"></td>
+                                <td><strong>SL202603240003</strong></td>
+                                <td>WT202603240003</td>
+                                <td>治安案件检测</td>
+                                <td>赵警官</td>
+                                <td>3</td>
+                                <td><span class="status-badge pending">待收检</span></td>
+                                <td>2026-03-24 11:00</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewReception('SL202603240003')" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon edit" onclick="editReception('SL202603240003')" title="编辑">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteReception('SL202603240003')" title="删除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn-icon print" onclick="printSampleCode('SL202603240003')" title="打印样品编码">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="receptionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-clipboard-list"></i>
+                    收检登记
+                </h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="receptionForm">
+                    <!-- 基础信息 -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-info-circle"></i>
+                            基础信息
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>委托编码 <span class="required">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="委托编码" placeholder="扫描或输入委托编码">
+                                    <button type="button" class="qr-btn" onclick="scanQR()">
+                                        <i class="fas fa-qrcode"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>受理编码 <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="受理编码" placeholder="系统自动生成" disabled value="SL202603240001">
+                            </div>
+                            <div class="form-group">
+                                <label>案事件名称 <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="案事件名称" placeholder="输入案事件名称">
+                            </div>
+                            <div class="form-group">
+                                <label>案件摘要 <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="案件摘要" placeholder="输入案件摘要">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>送检日期 <span class="required">*</span></label>
+                                <input type="datetime-local" class="form-control" id="送检日期" value="2026-03-24T09:00">
+                            </div>
+                            <div class="form-group">
+                                <label>受理人 <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="受理人" placeholder="系统自动填充" disabled value="李明">
+                            </div>
+                            <div class="form-group">
+                                <label>受理时间 <span class="required">*</span></label>
+                                <input type="datetime-local" class="form-control" id="受理时间" value="2026-03-24T09:00" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 样品信息 -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-vial"></i>
+                            样品信息
+                        </div>
+                        <div class="sub-table-container">
+                            <div class="sub-table-header">
+                                <h4>样品列表</h4>
+                                <button type="button" class="btn btn-sm btn-primary" onclick="addSampleRow()">
+                                    <i class="fas fa-plus"></i>
+                                    添加样品
+                                </button>
+                            </div>
+                            <table class="sub-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">操作</th>
+                                        <th>唯一编码</th>
+                                        <th>实验室编号</th>
+                                        <th>检测人姓名</th>
+                                        <th>样品数量</th>
+                                        <th>材料与样品</th>
+                                        <th>样品状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sampleTable">
+                                    <tr>
+                                        <td>
+                                            <button type="button" class="btn-icon btn-sm" onclick="removeSampleRow(this)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                        <td><input type="text" class="form-control" placeholder="系统生成" disabled value="202603240001"></td>
+                                        <td><input type="text" class="form-control" placeholder="输入实验室编号" value="JL2600001"></td>
+                                        <td><input type="text" class="form-control" placeholder="输入检测人姓名" value="张三"></td>
+                                        <td><input type="number" class="form-control" placeholder="输入样品数量" value="1"></td>
+                                        <td><input type="text" class="form-control" placeholder="例如：5毫升、试管装" value="5毫升、试管装"></td>
+                                        <td>
+                                            <select class="form-control">
+                                                <option value="pending" selected>待收检</option>
+                                                <option value="received">已收检</option>
+                                                <option value="rejected">拒收</option>
+                                                <option value="testing">在检</option>
+                                                <option value="completed">已检</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 送检人信息 -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-user-shield"></i>
+                            送检人信息
+                        </div>
+                        <div class="sub-table-container">
+                            <div class="sub-table-header">
+                                <h4>送检人列表</h4>
+                                <button type="button" class="btn btn-sm btn-primary" onclick="addSubmitterRow()">
+                                    <i class="fas fa-plus"></i>
+                                    添加送检人
+                                </button>
+                            </div>
+                            <table class="sub-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">操作</th>
+                                        <th>警号</th>
+                                        <th>姓名</th>
+                                        <th>电话</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="submitterTable">
+                                    <tr>
+                                        <td>
+                                            <button type="button" class="btn-icon btn-sm" onclick="removeSubmitterRow(this)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                        <td><input type="text" class="form-control" placeholder="输入警号" value="GZ001234"></td>
+                                        <td><input type="text" class="form-control" placeholder="输入姓名" value="张警官"></td>
+                                        <td><input type="text" class="form-control" placeholder="输入电话" value="13800138000"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                    取消
+                </button>
+                <button class="btn btn-primary" onclick="saveReception()">
+                    <i class="fas fa-save"></i>
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functions
+        function openModal() {
+            document.getElementById('receptionModal').classList.add('show');
+            generateReceptionCode();
+        }
+
+        function closeModal() {
+            document.getElementById('receptionModal').classList.remove('show');
+        }
+
+        // Generate reception code
+        function generateReceptionCode() {
+            const today = new Date();
+            const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+            const randomNum = Math.floor(Math.random() * 9000) + 1000;
+            const code = `SL${dateStr}${randomNum}`;
+            document.getElementById('受理编码').value = code;
+            document.getElementById('受理时间').value = today.toISOString().slice(0, 16);
+        }
+
+        // Add sample row
+        function addSampleRow() {
+            const tbody = document.getElementById('sampleTable');
+            const today = new Date();
+            const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+            const randomNum = Math.floor(Math.random() * 9000) + 1000;
+            const sampleCode = `${dateStr}${randomNum}`;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <button type="button" class="btn-icon btn-sm" onclick="removeSampleRow(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+                <td><input type="text" class="form-control" placeholder="系统生成" disabled value="${sampleCode}"></td>
+                <td><input type="text" class="form-control" placeholder="输入实验室编号"></td>
+                <td><input type="text" class="form-control" placeholder="输入检测人姓名"></td>
+                <td><input type="number" class="form-control" placeholder="输入样品数量"></td>
+                <td><input type="text" class="form-control" placeholder="例如：5毫升、试管装"></td>
+                <td>
+                    <select class="form-control">
+                        <option value="pending" selected>待收检</option>
+                        <option value="received">已收检</option>
+                        <option value="rejected">拒收</option>
+                        <option value="testing">在检</option>
+                        <option value="completed">已检</option>
+                    </select>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function removeSampleRow(btn) {
+            const tbody = document.getElementById('sampleTable');
+            if (tbody.rows.length > 1) {
+                btn.closest('tr').remove();
+            } else {
+                alert('至少保留一个样品信息');
+            }
+        }
+
+        // Add submitter row
+        function addSubmitterRow() {
+            const tbody = document.getElementById('submitterTable');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <button type="button" class="btn-icon btn-sm" onclick="removeSubmitterRow(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+                <td><input type="text" class="form-control" placeholder="输入警号"></td>
+                <td><input type="text" class="form-control" placeholder="输入姓名"></td>
+                <td><input type="text" class="form-control" placeholder="输入电话"></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function removeSubmitterRow(btn) {
+            const tbody = document.getElementById('submitterTable');
+            if (tbody.rows.length > 1) {
+                btn.closest('tr').remove();
+            } else {
+                alert('至少保留一个送检人信息');
+            }
+        }
+
+        // Save reception
+        function saveReception() {
+            alert('收检单保存成功！');
+            closeModal();
+        }
+
+        // View reception
+        function viewReception(code) {
+            alert(`查看收检单：${code}`);
+        }
+
+        // Edit reception
+        function editReception(code) {
+            alert(`编辑收检单：${code}`);
+            openModal();
+        }
+
+        // Delete reception
+        function deleteReception(code) {
+            if (confirm(`确定要删除收检单 ${code} 吗？`)) {
+                alert(`收检单 ${code} 已删除`);
+            }
+        }
+
+        // Print sample code
+        function printSampleCode(code) {
+            alert(`正在生成受理编码 ${code} 的样品编码标签...`);
+        }
+
+        // QR code scan
+        function scanQR() {
+            alert('请扫描二维码获取委托编码信息');
+        }
+
+        // Select all checkboxes
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        }
+
+        // Search function
+        function searchData() {
+            alert('正在查询数据...');
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.querySelectorAll('.filter-section input, .filter-section select').forEach(input => {
+                input.value = '';
+            });
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('receptionModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

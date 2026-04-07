@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>权限管理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #F9FAFB;
+            line-height: 1.5;
+            color: #1F2937;
+            min-height: 100vh;
+        }
+
+        .page-container {
+            padding: 24px;
+            max-width: 100%;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #6B7280;
+        }
+
+        .form-input {
+            padding: 10px 14px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease-out;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .permission-container {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+
+        .permission-group {
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .permission-group:last-child {
+            border-bottom: none;
+        }
+
+        .group-header {
+            padding: 16px 20px;
+            background: #F9FAFB;
+            border-bottom: 1px solid #E5E7EB;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s ease-out;
+        }
+
+        .group-header:hover {
+            background: #F3F4F6;
+        }
+
+        .group-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .group-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #EFF6FF;
+            color: #2563EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .group-arrow {
+            color: #9CA3AF;
+            transition: transform 0.2s ease-out;
+        }
+
+        .group-arrow.expanded {
+            transform: rotate(180deg);
+        }
+
+        .group-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .group-content.show {
+            display: block;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .permission-item:last-child {
+            border-bottom: none;
+        }
+
+        .permission-checkbox {
+            margin-top: 2px;
+        }
+
+        .permission-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #2563EB;
+        }
+
+        .permission-detail {
+            flex: 1;
+        }
+
+        .permission-code {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2563EB;
+            margin-bottom: 2px;
+        }
+
+        .permission-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1F2937;
+            margin-bottom: 2px;
+        }
+
+        .permission-desc {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+            border: none;
+            background: #F3F4F6;
+            color: #4B5563;
+        }
+
+        .action-btn:hover {
+            background: #E5E7EB;
+            color: #1F2937;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-enabled {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .status-disabled {
+            background: #F3F4F6;
+            color: #9CA3AF;
+        }
+
+        @media (max-width: 768px) {
+            .page-container {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">权限管理</h1>
+        </div>
+
+        <div class="filter-section">
+            <div class="form-group">
+                <label class="form-label">权限名称/编码</label>
+                <input type="text" class="form-input" id="filterKeyword" placeholder="请输入权限名称或编码" onkeyup="filterPermissions()">
+            </div>
+        </div>
+
+        <div class="permission-container" id="permissionContainer">
+        </div>
+    </div>
+
+    <script>
+        let permissions = [];
+        let roleData = [];
+
+        function initMockData() {
+            permissions = [
+                {
+                    id: 1,
+                    module: '收检管理',
+                    moduleIcon: 'fa-clipboard-list',
+                    items: [
+                        {
+                            code: 'reception:view',
+                            name: '查看受检管理',
+                            description: '允许查看所有收检记录',
+                            enabled: true
+                        },
+                        {
+                            code: 'reception:add',
+                            name: '新增收检',
+                            description: '允许创建新的收检登记',
+                            enabled: true
+                        },
+                        {
+                            code: 'reception:edit',
+                            name: '编辑收检',
+                            description: '允许编辑收检记录信息',
+                            enabled: true
+                        },
+                        {
+                            code: 'reception:delete',
+                            name: '删除收检',
+                            description: '允许删除收检记录',
+                            enabled: true
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    module: '送检人管理',
+                    moduleIcon: 'fa-user-tie',
+                    items: [
+                        {
+                            code: 'submitter:view',
+                            name: '查看送检人',
+                            description: '允许查看送检人信息库',
+                            enabled: true
+                        },
+                        {
+                            code: 'submitter:add',
+                            name: '新增送检人',
+                            description: '允许添加新送检人信息',
+                            enabled: true
+                        },
+                        {
+                            code: 'submitter:edit',
+                            name: '编辑送检人',
+                            description: '允许编辑送检人信息',
+                            enabled: true
+                        },
+                        {
+                            code: 'submitter:delete',
+                            name: '删除送检人',
+                            description: '允许删除送检人记录',
+                            enabled: true
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    module: '样品管理',
+                    moduleIcon: 'fa-vial',
+                    items: [
+                        {
+                            code: 'sample:view',
+                            name: '查看样品',
+                            description: '允许查看样品信息和状态',
+                            enabled: true
+                        },
+                        {
+                            code: 'sample:edit',
+                            name: '编辑样品',
+                            description: '允许编辑样品信息',
+                            enabled: true
+                        },
+                        {
+                            code: 'sample:status',
+                            name: '修改状态',
+                            description: '允许修改样品流转状态',
+                            enabled: true
+                        }
+                    ]
+                },
+                {
+                    id: 4,
+                    module: '前置处理',
+                    moduleIcon: 'fa-flask',
+                    items: [
+                        {
+                            code: 'preprocess:view',
+                            name: '查看批次',
+                            description: '允许查看处理批次信息',
+                            enabled: true
+                        },
+                        {
+                            code: 'preprocess:add',
+                            name: '创建批次',
+                            description: '允许创建新的处理批次',
+                            enabled: true
+                        },
+                        {
+                            code: 'preprocess:edit',
+                            name: '编辑批次',
+                            description: '允许编辑批次配置',
+                            enabled: true
+                        },
+                        {
+                            code: 'preprocess:quality',
+                            name: '质控配置',
+                            description: '允许配置质控样品',
+                            enabled: true
+                        }
+                    ]
+                },
+                {
+                    id: 5,
+                    module: '分析检测',
+                    moduleIcon: 'fa-chart-line',
+                    items: [
+                        {
+                            code: 'analysis:view',
+                            name: '查看结果',
+                            description: '允许查看检测分析结果',
+                            enabled: true
+                        },
+                        {
+                            code: 'analysis:edit',
+                            name: '编辑结果',
+                            description: '允许编辑检测结果',
+                            enabled: true
+                        },
+                        {
+                            code: 'analysis:audit',
+                            name: '审核结果',
+                            description: '允许审核检测结果',
+                            enabled: true
+                        },
+                        {
+                            code: 'analysis:export',
+                            name: '导出数据',
+                            description: '允许导出检测数据',
+                            enabled: true
+                        }
+                    ]
+                },
+                {
+                    id: 6,
+                    module: '报告管理',
+                    moduleIcon: 'fa-file-alt',
+                    items: [
+                        {
+                            code: 'report:view',
+                            name: '查看报告',
+                            description: '允许查看检验报告',
+                            enabled: true
+                        },
+                        {
+                            code: 'report:create',
+                            name: '生成报告',
+                            description: '允许生成检验报告',
+                            enabled: true
+                        },
+                        {
+                            code: 'report:edit',
+                            name: '编辑报告',
+                            description: '允许编辑报告内容',
+                            enabled: true
+                        },
+                        {
+                            code: 'report:audit',
+                            name: '审核报告',
+                            description: '允许审核报告',
+                            enabled: true
+                        },
+                        {
+                            code: 'report:sign',
+                            name: '签发报告',
+                            description: '允许签发正式报告',
+                            enabled: true
+                        }
+                    ]
+                },
+                {
+                    id: 7,
+                    module: '系统管理',
+                    moduleIcon: 'fa-cogs',
+                    items: [
+                        {
+                            code: 'user:view',
+                            name: '用户管理',
+                            description: '管理系统用户信息',
+                            enabled: true
+                        },
+                        {
+                            code: 'role:view',
+                            name: '角色管理',
+                            description: '管理系统角色和权限分配',
+                            enabled: true
+                        },
+                        {
+                            code: 'permission:view',
+                            name: '权限管理',
+                            description: '管理系统权限配置',
+                            enabled: true
+                        },
+                        {
+                            code: 'log:view',
+                            name: '操作日志',
+                            description: '查看系统操作日志',
+                            enabled: true
+                        }
+                    ]
+                }
+            ];
+
+            localStorage.setItem('permissionData', JSON.stringify(permissions));
+        }
+
+        function loadFromLocal() {
+            const saved = localStorage.getItem('permissionData');
+            if (saved) {
+                permissions = JSON.parse(saved);
+            } else {
+                initMockData();
+            }
+
+            const roleSaved = localStorage.getItem('roleData');
+            if (roleSaved) {
+                roleData = JSON.parse(roleSaved);
+            }
+        }
+
+        function saveToLocal() {
+            localStorage.setItem('permissionData', JSON.stringify(permissions));
+        }
+
+        function renderPermissions() {
+            const container = document.getElementById('permissionContainer');
+            
+            container.innerHTML = permissions.map(group => {
+                return `
+                    <div class="permission-group" data-group="${group.module}">
+                        <div class="group-header" onclick="toggleGroup('${group.module}')">
+                            <div class="group-title">
+                                <div class="group-icon">
+                                    <i class="fas ${group.moduleIcon}"></i>
+                                </div>
+                                ${group.module}
+                                <span class="status-badge status-enabled">${group.items.length} 项</span>
+                            </div>
+                            <i class="fas fa-chevron-down group-arrow expanded" id="arrow-${group.module}"></i>
+                        </div>
+                        <div class="group-content show" id="content-${group.module}">
+                            ${group.items.map(item => `
+                                <div class="permission-item" data-code="${item.code}" data-name="${item.name}">
+                                    <div class="permission-checkbox">
+                                        <input type="checkbox" 
+                                               id="perm-${item.code}" 
+                                               ${item.enabled ? 'checked' : ''} 
+                                               onchange="togglePermission('${item.code}')"
+                                               ${item.code.includes('permission:view') ? 'disabled' : ''}>
+                                    </div>
+                                    <div class="permission-detail">
+                                        <div class="permission-code">${item.code}</div>
+                                        <div class="permission-name">${item.name}</div>
+                                        <div class="permission-desc">${item.description}</div>
+                                    </div>
+                                    <div>
+                                        <span class="status-badge ${item.enabled ? 'status-enabled' : 'status-disabled'}">
+                                            ${item.enabled ? '已启用' : '已禁用'}
+                                        </span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleGroup(module) {
+            const content = document.getElementById(`content-${module}`);
+            const arrow = document.getElementById(`arrow-${module}`);
+            
+            content.classList.toggle('show');
+            arrow.classList.toggle('expanded');
+        }
+
+        function togglePermission(code) {
+            for (const group of permissions) {
+                const item = group.items.find(i => i.code === code);
+                if (item) {
+                    item.enabled = !item.enabled;
+                    saveToLocal();
+                    
+                    const itemEl = document.querySelector(`[data-code="${code}"]`);
+                    const badge = itemEl.querySelector('.status-badge');
+                    badge.className = `status-badge ${item.enabled ? 'status-enabled' : 'status-disabled'}`;
+                    badge.textContent = item.enabled ? '已启用' : '已禁用';
+                    
+                    console.log(`${item.enabled ? '启用' : '禁用'}权限:`, code);
+                    logOperation(item.enabled ? '启用权限' : '禁用权限', '权限管理', `${code} - ${item.name}`);
+                    break;
+                }
+            }
+        }
+
+        function filterPermissions() {
+            const keyword = document.getElementById('filterKeyword').value.trim().toLowerCase();
+            
+            if (!keyword) {
+                renderPermissions();
+                return;
+            }
+
+            const container = document.getElementById('permissionContainer');
+            container.innerHTML = permissions.map(group => {
+                const filteredItems = group.items.filter(item => 
+                    item.code.toLowerCase().includes(keyword) || 
+                    item.name.toLowerCase().includes(keyword) ||
+                    item.description.toLowerCase().includes(keyword)
+                );
+
+                if (filteredItems.length === 0) {
+                    return '';
+                }
+
+                return `
+                    <div class="permission-group" data-group="${group.module}">
+                        <div class="group-header" onclick="toggleGroup('${group.module}')">
+                            <div class="group-title">
+                                <div class="group-icon">
+                                    <i class="fas ${group.moduleIcon}"></i>
+                                </div>
+                                ${group.module}
+                                <span class="status-badge status-enabled">${filteredItems.length}/${group.items.length} 项</span>
+                            </div>
+                            <i class="fas fa-chevron-down group-arrow expanded" id="arrow-${group.module}"></i>
+                        </div>
+                        <div class="group-content show" id="content-${group.module}">
+                            ${filteredItems.map(item => `
+                                <div class="permission-item" data-code="${item.code}" data-name="${item.name}">
+                                    <div class="permission-checkbox">
+                                        <input type="checkbox" 
+                                               id="perm-${item.code}" 
+                                               ${item.enabled ? 'checked' : ''} 
+                                               onchange="togglePermission('${item.code}')"
+                                               ${item.code.includes('permission:view') ? 'disabled' : ''}>
+                                    </div>
+                                    <div class="permission-detail">
+                                        <div class="permission-code">${item.code}</div>
+                                        <div class="permission-name">${item.name}</div>
+                                        <div class="permission-desc">${item.description}</div>
+                                    </div>
+                                    <div>
+                                        <span class="status-badge ${item.enabled ? 'status-enabled' : 'status-disabled'}">
+                                            ${item.enabled ? '已启用' : '已禁用'}
+                                        </span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function logOperation(action, module, detail) {
+            const logs = JSON.parse(localStorage.getItem('operationLogs') || '[]');
+            logs.unshift({
+                id: Date.now(),
+                action: action,
+                module: module,
+                detail: detail,
+                operator: '李受理员',
+                operatorTime: new Date().toISOString()
+            });
+            localStorage.setItem('operationLogs', JSON.stringify(logs));
+            console.log(`[操作日志] ${action} - ${module}: ${detail}`);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromLocal();
+            renderPermissions();
+            console.log('权限管理页面初始化完成');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>操作日志 - 血液乙醇检验实验室管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0891B2;
+            --primary-light: #22D3EE;
+            --primary-dark: #164E63;
+            --success-color: #059669;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --info-color: #3B82F6;
+            --bg-primary: #ECFEFF;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F1F5F9;
+            --text-primary: #0F172A;
+            --text-secondary: #334155;
+            --text-tertiary: #64748B;
+            --border-color: #E2E8F0;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ECFEFF 0%, #F0F9FF 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-section {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .logo-section h1 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-section p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .menu-container {
+            padding: 16px 0;
+            flex: 1;
+        }
+
+        .menu-section {
+            margin-bottom: 24px;
+        }
+
+        .menu-title {
+            padding: 8px 24px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary-color);
+            border-left-color: var(--primary-light);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(90deg, rgba(8, 145, 178, 0.1) 0%, transparent 100%);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px 32px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header h2 i {
+            color: var(--primary-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: 0 2px 4px rgba(8, 145, 178, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(8, 145, 178, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* Table Section */
+        .table-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .table-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .log-id {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .log-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .log-type.create {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success-color);
+        }
+
+        .log-type.update {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+        }
+
+        .log-type.delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .log-type.login {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8B5CF6;
+        }
+
+        .log-type.export {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .log-desc {
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .log-ip {
+            font-family: 'Courier New', monospace;
+            color: var(--text-tertiary);
+            font-size: 13px;
+        }
+
+        /* Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .detail-item {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: var(--radius-md);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .detail-value strong {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .detail-section-title i {
+            color: var(--primary-color);
+        }
+
+        .json-content {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: var(--bg-tertiary);
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .btn-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-section">
+                <h1>
+                    <i class="fas fa-flask"></i>
+                    血液乙醇检验<br>实验室管理系统
+                </h1>
+                <p>Blood Alcohol Testing Laboratory Management System</p>
+            </div>
+
+            <div class="menu-container">
+                <div class="menu-section">
+                    <div class="menu-title">检验流程</div>
+                    <a class="menu-item" href="reception.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>收检管理</span>
+                    </a>
+                    <a class="menu-item" href="preprocess.html">
+                        <i class="fas fa-cogs"></i>
+                        <span>前置处理</span>
+                    </a>
+                    <a class="menu-item" href="sample.html">
+                        <i class="fas fa-vial"></i>
+                        <span>样品管理</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">审核与报告</div>
+                    <a class="menu-item" href="analysis.html">
+                        <i class="fas fa-microscope"></i>
+                        <span>结果审核</span>
+                    </a>
+                    <a class="menu-item" href="report.html">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>报告管理</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">系统管理</div>
+                    <a class="menu-item" href="user.html">
+                        <i class="fas fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                    <a class="menu-item" href="role.html">
+                        <i class="fas fa-user-shield"></i>
+                        <span>角色管理</span>
+                    </a>
+                    <a class="menu-item" href="permission.html">
+                        <i class="fas fa-key"></i>
+                        <span>权限管理</span>
+                    </a>
+                    <a class="menu-item active" href="operation_log.html">
+                        <i class="fas fa-history"></i>
+                        <span>操作日志</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-history"></i>
+                    操作日志
+                </h2>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="exportLogs()">
+                        <i class="fas fa-download"></i>
+                        导出日志
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label>日志编号</label>
+                        <input type="text" class="form-control" placeholder="输入日志编号">
+                    </div>
+                    <div class="form-group">
+                        <label>操作类型</label>
+                        <select class="form-control">
+                            <option value="">全部</option>
+                            <option value="create">创建</option>
+                            <option value="update">更新</option>
+                            <option value="delete">删除</option>
+                            <option value="login">登录</option>
+                            <option value="export">导出</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>操作人</label>
+                        <input type="text" class="form-control" placeholder="输入操作人姓名">
+                    </div>
+                    <div class="form-group">
+                        <label>时间范围</label>
+                        <input type="datetime-local" class="form-control">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-secondary" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i>
+                        重置
+                    </button>
+                    <button class="btn btn-primary" onclick="searchLogs()">
+                        <i class="fas fa-search"></i>
+                        查询
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>操作日志列表</h3>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>日志ID</th>
+                                <th>操作类型</th>
+                                <th>操作模块</th>
+                                <th>操作描述</th>
+                                <th>操作人</th>
+                                <th>IP地址</th>
+                                <th>操作时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logTable">
+                            <tr>
+                                <td><span class="log-id">LOG202603240001</span></td>
+                                <td><span class="log-type create">创建</span></td>
+                                <td>收检管理</td>
+                                <td class="log-desc">创建收检记录 SL202603240001</td>
+                                <td>李明</td>
+                                <td class="log-ip">192.168.1.100</td>
+                                <td>2026-03-24 10:00:00</td>
+                                <td>
+                                    <button class="btn-icon" onclick="viewLogDetail('LOG202603240001')" title="查看详情">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="log-id">LOG202603240002</span></td>
+                                <td><span class="log-type update">更新</span></td>
+                                <td>样品管理</td>
+                                <td class="log-desc">更新样品 202603240001 状态为"处理中"</td>
+                                <td>张三</td>
+                                <td class="log-ip">192.168.1.101</td>
+                                <td>2026-03-24 10:15:00</td>
+                                <td>
+                                    <button class="btn-icon" onclick="viewLogDetail('LOG202603240002')" title="查看详情">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="log-id">LOG202603240003</span></td>
+                                <td><span class="log-type create">创建</span></td>
+                                <td>批次管理</td>
+                                <td class="log-desc">创建批次 PC20260324001</td>
+                                <td>张三</td>
+                                <td class="log-ip">192.168.1.101</td>
+                                <td>2026-03-24 10:20:00</td>
+                                <td>
+                                    <button class="btn-icon" onclick="viewLogDetail('LOG202603240003')" title="查看详情">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="log-id">LOG202603240004</span></td>
+                                <td><span class="log-type login">登录</span></td>
+                                <td>用户登录</td>
+                                <td class="log-desc">用户 赵六 登录系统</td>
+                                <td>赵六</td>
+                                <td class="log-ip">192.168.1.102</td>
+                                <td>2026-03-24 10:30:00</td>
+                                <td>
+                                    <button class="btn-icon" onclick="viewLogDetail('LOG202603240004')" title="查看详情">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="log-id">LOG202603240005</span></td>
+                                <td><span class="log-type export">导出</span></td>
+                                <td>报告管理</td>
+                                <td class="log-desc">导出报告 RPT202603240001 为 PDF</td>
+                                <td>李明</td>
+                                <td class="log-ip">192.168.1.100</td>
+                                <td>2026-03-24 11:00:00</td>
+                                <td>
+                                    <button class="btn-icon" onclick="viewLogDetail('LOG202603240005')" title="查看详情">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="log-id">LOG202603240006</span></td>
+                                <td><span class="log-type update">更新</span></td>
+                                <td>结果审核</td>
+                                <td class="log-desc">审核通过检测结果 202603240001</td>
+                                <td>赵六</td>
+                                <td class="log-ip">192.168.1.102</td>
+                                <td>2026-03-24 11:15:00</td>
+                                <td>
+                                    <button class="btn-icon" onclick="viewLogDetail('LOG202603240006')" title="查看详情">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="log-id">LOG202603240007</span></td>
+                                <td><span class="log-type delete">删除</span></td>
+                                <td>收检管理</td>
+                                <td class="log-desc">删除收检记录 SL202603240003</td>
+                                <td>李明</td>
+                                <td class="log-ip">192.168.1.100</td>
+                                <td>2026-03-24 11:30:00</td>
+                                <td>
+                                    <button class="btn-icon" onclick="viewLogDetail('LOG202603240007')" title="查看详情">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-eye"></i>
+                    操作日志详情
+                </h3>
+                <button class="modal-close" onclick="closeDetailModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">日志ID</div>
+                        <div class="detail-value"><strong>LOG202603240001</strong></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">操作类型</div>
+                        <div class="detail-value"><span class="log-type create">创建</span></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">操作模块</div>
+                        <div class="detail-value">收检管理</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">操作人</div>
+                        <div class="detail-value">李明</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">IP地址</div>
+                        <div class="detail-value">192.168.1.100</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">操作时间</div>
+                        <div class="detail-value">2026-03-24 10:00:00</div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">
+                        <i class="fas fa-info-circle"></i>
+                        操作描述
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 16px; border-radius: var(--radius-md);">
+                        创建收检记录 SL202603240001，包含2个样品
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">
+                        <i class="fas fa-database"></i>
+                        操作数据
+                    </div>
+                    <div class="json-content">{
+  "reception_id": "SL202603240001",
+  "request_code": "YW202603240001",
+  "samples": [
+    {
+      "sample_id": "202603240001",
+      "sample_type": "血液",
+      "quantity": "5mL"
+    },
+    {
+      "sample_id": "202603240002",
+      "sample_type": "血液",
+      "quantity": "5mL"
+    }
+  ],
+  "submitter": "张警官",
+  "submitter_badge": "GZ001234",
+  "case_name": "交通事故乙醇检测",
+  "created_by": "李明",
+  "created_time": "2026-03-24 10:00:00"
+}</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailModal()">
+                    <i class="fas fa-times"></i>
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Detail modal
+        function viewLogDetail(logId) {
+            document.getElementById('detailModal').classList.add('show');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+
+        // Search logs
+        function searchLogs() {
+            alert('正在查询操作日志...');
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.querySelectorAll('.filter-section input, .filter-section select').forEach(input => {
+                input.value = '';
+            });
+        }
+
+        // Export logs
+        function exportLogs() {
+            alert('正在导出操作日志...');
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const detailModal = document.getElementById('detailModal');
+            if (event.target === detailModal) {
+                closeDetailModal();
+            }
+        }
+    </script>
+</body>
+</html>

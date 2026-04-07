@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前置处理 - 血液乙醇检验实验室管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0891B2;
+            --primary-light: #22D3EE;
+            --primary-dark: #164E63;
+            --success-color: #059669;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --info-color: #3B82F6;
+            --bg-primary: #ECFEFF;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F1F5F9;
+            --text-primary: #0F172A;
+            --text-secondary: #334155;
+            --text-tertiary: #64748B;
+            --border-color: #E2E8F0;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ECFEFF 0%, #F0F9FF 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-section {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .logo-section h1 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-section p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .menu-container {
+            padding: 16px 0;
+            flex: 1;
+        }
+
+        .menu-section {
+            margin-bottom: 24px;
+        }
+
+        .menu-title {
+            padding: 8px 24px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary-color);
+            border-left-color: var(--primary-light);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(90deg, rgba(8, 145, 178, 0.1) 0%, transparent 100%);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: var(--danger-color);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px 32px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header h2 i {
+            color: var(--primary-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: 0 2px 4px rgba(8, 145, 178, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(8, 145, 178, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* Table Section */
+        .table-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .table-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-badge.processing {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+        }
+
+        .status-badge.completed {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-badge.cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .btn-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-icon.view:hover {
+            background: var(--info-color);
+            border-color: var(--info-color);
+        }
+
+        .btn-icon.edit:hover {
+            background: var(--warning-color);
+            border-color: var(--warning-color);
+        }
+
+        .btn-icon.delete:hover {
+            background: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .form-section-title i {
+            color: var(--primary-color);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group label .required {
+            color: var(--danger-color);
+            margin-left: 4px;
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .form-control:disabled {
+            background: var(--bg-tertiary);
+            cursor: not-allowed;
+        }
+
+        /* Checkbox Group */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: var(--border-color);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Two Column Layout */
+        .two-column-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .column-section {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .column-header h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .sub-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sub-table th,
+        .sub-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .sub-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Status Check */
+        .status-check {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+        }
+
+        .status-check-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .status-check-icon.ok {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .status-check-icon.error {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .status-check-icon.warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .status-check-content {
+            flex: 1;
+        }
+
+        .status-check-content h5 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .status-check-content p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .status-check-btn {
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .status-check-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: var(--bg-tertiary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .two-column-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-section">
+                <h1>
+                    <i class="fas fa-flask"></i>
+                    血液乙醇检验<br>实验室管理系统
+                </h1>
+                <p>Blood Alcohol Testing Laboratory Management System</p>
+            </div>
+
+            <div class="menu-container">
+                <div class="menu-section">
+                    <div class="menu-title">检验流程</div>
+                    <a class="menu-item" href="reception.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>收检管理</span>
+                    </a>
+                    <a class="menu-item active" href="preprocess.html">
+                        <i class="fas fa-cogs"></i>
+                        <span>前置处理</span>
+                    </a>
+                    <a class="menu-item" href="sample.html">
+                        <i class="fas fa-vial"></i>
+                        <span>样品管理</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">审核与报告</div>
+                    <a class="menu-item" href="analysis.html">
+                        <i class="fas fa-microscope"></i>
+                        <span>结果审核</span>
+                    </a>
+                    <a class="menu-item" href="report.html">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>报告管理</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">系统管理</div>
+                    <a class="menu-item" href="user.html">
+                        <i class="fas fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                    <a class="menu-item" href="role.html">
+                        <i class="fas fa-user-shield"></i>
+                        <span>角色管理</span>
+                    </a>
+                    <a class="menu-item" href="permission.html">
+                        <i class="fas fa-key"></i>
+                        <span>权限管理</span>
+                    </a>
+                    <a class="menu-item" href="operation_log.html">
+                        <i class="fas fa-history"></i>
+                        <span>操作日志</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="user-profile">
+                <div class="user-info">
+                    <div class="user-avatar">李</div>
+                    <div class="user-details">
+                        <h4>李明</h4>
+                        <p>受理员</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-cogs"></i>
+                    批次管理
+                </h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openModal()">
+                        <i class="fas fa-plus"></i>
+                        新增批次
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label>批次编号</label>
+                        <input type="text" class="form-control" placeholder="输入批次编号">
+                    </div>
+                    <div class="form-group">
+                        <label>优先级</label>
+                        <select class="form-control">
+                            <option value="">全部</option>
+                            <option value="high">高</option>
+                            <option value="medium">中</option>
+                            <option value="low">低</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-secondary" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i>
+                        重置
+                    </button>
+                    <button class="btn btn-primary" onclick="searchBatches()">
+                        <i class="fas fa-search"></i>
+                        查询
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>批次列表</h3>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>批次号</th>
+                                <th>状态</th>
+                                <th>样品数量</th>
+                                <th>创建人</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="batchTable">
+                            <tr>
+                                <td><strong>PC202603240001</strong></td>
+                                <td><span class="status-badge completed">已完成</span></td>
+                                <td>3</td>
+                                <td>操作员A</td>
+                                <td>2026-03-24 09:00</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewBatch('PC202603240001')" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon edit" onclick="editBatch('PC202603240001')" title="编辑">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteBatch('PC202603240001')" title="删除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>PC202603240002</strong></td>
+                                <td><span class="status-badge processing">执行中</span></td>
+                                <td>2</td>
+                                <td>操作员A</td>
+                                <td>2026-03-24 10:30</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewBatch('PC202603240002')" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon edit" onclick="editBatch('PC202603240002')" title="编辑">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteBatch('PC202603240002')" title="删除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>PC202603240003</strong></td>
+                                <td><span class="status-badge pending">待配置</span></td>
+                                <td>0</td>
+                                <td>操作员B</td>
+                                <td>2026-03-24 11:00</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewBatch('PC202603240003')" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon edit" onclick="editBatch('PC202603240003')" title="编辑">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteBatch('PC202603240003')" title="删除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="batchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-cogs"></i>
+                    新增批次
+                </h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="batchForm">
+                    <!-- 批次基础信息 -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-info-circle"></i>
+                            批次基础信息
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>批次号 <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="批次号" placeholder="系统自动生成" disabled value="PC202603240001">
+                            </div>
+                            <div class="form-group">
+                                <label>创建人 <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="创建人" placeholder="当前登录用户" disabled value="操作员A">
+                            </div>
+                            <div class="form-group">
+                                <label>状态 <span class="required">*</span></label>
+                                <select class="form-control" id="状态">
+                                    <option value="pending" selected>待配置</option>
+                                    <option value="configuring">配置中</option>
+                                    <option value="ready">待执行</option>
+                                    <option value="running">执行中</option>
+                                    <option value="completed">已完成</option>
+                                    <option value="cancelled">已取消</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>样品数量 <span class="required">*</span></label>
+                                <input type="number" class="form-control" id="样品数量" value="0" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 样品选择 -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-vial"></i>
+                            样品选择
+                        </div>
+                        <div class="two-column-layout">
+                            <!-- 待检样品列表 -->
+                            <div class="column-section">
+                                <div class="column-header">
+                                    <h4>待检样品（共5个）</h4>
+                                </div>
+                                <table class="sub-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50px;">选择</th>
+                                            <th>受理编号</th>
+                                            <th>样品编号</th>
+                                            <th>检测人</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pendingSamples">
+                                        <tr>
+                                            <td><input type="checkbox" onchange="updateSampleCount()"></td>
+                                            <td>SL202603240001</td>
+                                            <td>202603240001</td>
+                                            <td>张三</td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" onchange="updateSampleCount()"></td>
+                                            <td>SL202603240001</td>
+                                            <td>202603240002</td>
+                                            <td>李四</td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" onchange="updateSampleCount()"></td>
+                                            <td>SL202603240002</td>
+                                            <td>202603240003</td>
+                                            <td>王五</td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" onchange="updateSampleCount()"></td>
+                                            <td>SL202603240002</td>
+                                            <td>202603240004</td>
+                                            <td>赵六</td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" onchange="updateSampleCount()"></td>
+                                            <td>SL202603240003</td>
+                                            <td>202603240005</td>
+                                            <td>孙七</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- 已选样品列表 -->
+                            <div class="column-section">
+                                <div class="column-header">
+                                    <h4>已选样品（共0个）</h4>
+                                    <button type="button" class="btn-icon btn-sm" onclick="clearSelectedSamples()" title="清空">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <table class="sub-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50px;">移除</th>
+                                            <th>受理编号</th>
+                                            <th>样品编号</th>
+                                            <th>检测人</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="selectedSamples">
+                                        <!-- 动态填充 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div style="margin-top: 12px; padding: 12px; background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                            <p style="font-size: 13px; color: var(--text-tertiary);">
+                                <i class="fas fa-info-circle"></i>
+                                提示：可拖拽调整样品顺序，点击待检样品选择，点击已选样品移除
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 质控样配置 -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-flask"></i>
+                            质控样配置
+                        </div>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="qualityControl" value="blank">
+                                <span>空白</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="qualityControl" value="curve">
+                                <span>曲线</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="qualityControl" value="quality">
+                                <span>质控</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="qualityControl" value="calibration">
+                                <span>标定样</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 处理方法 -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-book"></i>
+                            处理方法
+                        </div>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="method" value="GBT4230-2023" checked>
+                                <span>GB/T 4230-2023</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="method" value="other">
+                                <span>其他方法</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 状态检查 -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-check-circle"></i>
+                            状态检查
+                        </div>
+                        <div class="status-check">
+                            <div class="status-check-icon ok">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="status-check-content">
+                                <h5>耗材状态检查</h5>
+                                <p>所有耗材充足，状态正常</p>
+                            </div>
+                            <button class="status-check-btn" onclick="checkConsumables()">
+                                <i class="fas fa-sync"></i>
+                                重新检查
+                            </button>
+                        </div>
+                        <div class="status-check">
+                            <div class="status-check-icon ok">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="status-check-content">
+                                <h5>设备状态检查</h5>
+                                <p>GC仪器运行正常，参数已校准</p>
+                            </div>
+                            <button class="status-check-btn" onclick="checkEquipment()">
+                                <i class="fas fa-sync"></i>
+                                重新检查
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                    取消
+                </button>
+                <button class="btn btn-success" onclick="executeBatch()">
+                    <i class="fas fa-play"></i>
+                    执行检查指令
+                </button>
+                <button class="btn btn-primary" onclick="saveBatch()">
+                    <i class="fas fa-save"></i>
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functions
+        function openModal() {
+            document.getElementById('batchModal').classList.add('show');
+            generateBatchCode();
+        }
+
+        function closeModal() {
+            document.getElementById('batchModal').classList.remove('show');
+        }
+
+        // Generate batch code
+        function generateBatchCode() {
+            const today = new Date();
+            const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+            const randomNum = Math.floor(Math.random() * 9000) + 1000;
+            const code = `PC${dateStr}${randomNum}`;
+            document.getElementById('批次号').value = code;
+        }
+
+        // Update sample count
+        function updateSampleCount() {
+            const checkboxes = document.querySelectorAll('#pendingSamples input[type="checkbox"]:checked');
+            document.getElementById('样品数量').value = checkboxes.length;
+        }
+
+        // Clear selected samples
+        function clearSelectedSamples() {
+            document.querySelectorAll('#pendingSamples input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            document.getElementById('selectedSamples').innerHTML = '';
+            document.getElementById('样品数量').value = 0;
+        }
+
+        // Save batch
+        function saveBatch() {
+            alert('批次保存成功！');
+            closeModal();
+        }
+
+        // Execute batch
+        function executeBatch() {
+            const sampleCount = parseInt(document.getElementById('样品数量').value);
+            if (sampleCount === 0) {
+                alert('请至少选择一个样品');
+                return;
+            }
+
+            if (confirm(`确定要执行批次 ${document.getElementById('批次号').value} 的检查指令吗？\n样品数量：${sampleCount}`)) {
+                alert('检查指令已发送，设备开始执行前处理流程...');
+                document.getElementById('状态').value = 'running';
+            }
+        }
+
+        // Check consumables
+        function checkConsumables() {
+            alert('正在检查耗材状态...');
+        }
+
+        // Check equipment
+        function checkEquipment() {
+            alert('正在检查设备状态...');
+        }
+
+        // View batch
+        function viewBatch(code) {
+            alert(`查看批次：${code}`);
+            openModal();
+        }
+
+        // Edit batch
+        function editBatch(code) {
+            alert(`编辑批次：${code}`);
+            openModal();
+        }
+
+        // Delete batch
+        function deleteBatch(code) {
+            if (confirm(`确定要删除批次 ${code} 吗？`)) {
+                alert(`批次 ${code} 已删除`);
+            }
+        }
+
+        // Search batches
+        function searchBatches() {
+            alert('正在查询批次数据...');
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.querySelectorAll('.filter-section input, .filter-section select').forEach(input => {
+                input.value = '';
+            });
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('batchModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报告管理 - 血液乙醇检验实验室管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0891B2;
+            --primary-light: #22D3EE;
+            --primary-dark: #164E63;
+            --success-color: #059669;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --info-color: #3B82F6;
+            --bg-primary: #ECFEFF;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F1F5F9;
+            --text-primary: #0F172A;
+            --text-secondary: #334155;
+            --text-tertiary: #64748B;
+            --border-color: #E2E8F0;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ECFEFF 0%, #F0F9FF 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-section {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .logo-section h1 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-section p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .menu-container {
+            padding: 16px 0;
+            flex: 1;
+        }
+
+        .menu-section {
+            margin-bottom: 24px;
+        }
+
+        .menu-title {
+            padding: 8px 24px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary-color);
+            border-left-color: var(--primary-light);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(90deg, rgba(8, 145, 178, 0.1) 0%, transparent 100%);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: var(--danger-color);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px 32px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header h2 i {
+            color: var(--primary-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: 0 2px 4px rgba(8, 145, 178, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(8, 145, 178, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* Table Section */
+        .table-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .table-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.draft {
+            background: rgba(148, 163, 184, 0.1);
+            color: #64748B;
+        }
+
+        .status-badge.review {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+        }
+
+        .status-badge.signed {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-badge.rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .btn-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-icon.view:hover {
+            background: var(--info-color);
+            border-color: var(--info-color);
+        }
+
+        .btn-icon.download:hover {
+            background: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .btn-icon.audit:hover {
+            background: var(--warning-color);
+            border-color: var(--warning-color);
+        }
+
+        .btn-icon.delete:hover {
+            background: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* Review Progress Styles */
+        .review-progress {
+            margin-bottom: 24px;
+        }
+
+        .progress-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-title i {
+            color: var(--primary-color);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 0;
+        }
+
+        .progress-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 20px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            color: var(--text-tertiary);
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .step-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(8, 145, 178, 0.3);
+        }
+
+        .progress-step.completed .step-icon {
+            background: linear-gradient(135deg, var(--success-color), #10B981);
+            border-color: var(--success-color);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .progress-step.active .step-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .progress-step.completed .step-label {
+            color: var(--success-color);
+        }
+
+        .step-status {
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .step-time {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        /* Audit Form Styles */
+        .audit-form {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group label .required {
+            color: var(--danger-color);
+            margin-left: 4px;
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+            width: 100%;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .audit-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        /* User Selection Styles */
+        .user-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .user-card {
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-card:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-tertiary);
+        }
+
+        .user-card.selected {
+            border-color: var(--primary-color);
+            background: rgba(8, 145, 178, 0.1);
+        }
+
+        .user-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-card-header h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-card p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        /* Detail Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .detail-item {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: var(--radius-md);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .detail-value strong {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: var(--bg-tertiary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-section">
+                <h1>
+                    <i class="fas fa-flask"></i>
+                    血液乙醇检验<br>实验室管理系统
+                </h1>
+                <p>Blood Alcohol Testing Laboratory Management System</p>
+            </div>
+
+            <div class="menu-container">
+                <div class="menu-section">
+                    <div class="menu-title">检验流程</div>
+                    <a class="menu-item" href="reception.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>收检管理</span>
+                    </a>
+                    <a class="menu-item" href="preprocess.html">
+                        <i class="fas fa-cogs"></i>
+                        <span>前置处理</span>
+                    </a>
+                    <a class="menu-item" href="sample.html">
+                        <i class="fas fa-vial"></i>
+                        <span>样品管理</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">审核与报告</div>
+                    <a class="menu-item" href="analysis.html">
+                        <i class="fas fa-microscope"></i>
+                        <span>结果审核</span>
+                    </a>
+                    <a class="menu-item active" href="report.html">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>报告管理</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">系统管理</div>
+                    <a class="menu-item" href="user.html">
+                        <i class="fas fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                    <a class="menu-item" href="role.html">
+                        <i class="fas fa-user-shield"></i>
+                        <span>角色管理</span>
+                    </a>
+                    <a class="menu-item" href="permission.html">
+                        <i class="fas fa-key"></i>
+                        <span>权限管理</span>
+                    </a>
+                    <a class="menu-item" href="operation_log.html">
+                        <i class="fas fa-history"></i>
+                        <span>操作日志</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-file-pdf"></i>
+                    报告管理
+                </h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openCreateModal()">
+                        <i class="fas fa-plus"></i>
+                        生成报告
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label>报告编号</label>
+                        <input type="text" class="form-control" placeholder="输入报告编号">
+                    </div>
+                    <div class="form-group">
+                        <label>审核状态</label>
+                        <select class="form-control">
+                            <option value="">全部</option>
+                            <option value="draft">草稿</option>
+                            <option value="review">复核中</option>
+                            <option value="signed">已签发</option>
+                            <option value="rejected">已驳回</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>生成时间范围</label>
+                        <input type="date" class="form-control">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-secondary" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i>
+                        重置
+                    </button>
+                    <button class="btn btn-primary" onclick="searchReports()">
+                        <i class="fas fa-search"></i>
+                        查询
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>报告列表</h3>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>报告ID</th>
+                                <th>报告编号</th>
+                                <th>审核状态</th>
+                                <th>生成时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTable">
+                            <tr>
+                                <td><strong>RPT202603240001</strong></td>
+                                <td><strong>X检字[2026]第089号</strong></td>
+                                <td><span class="status-badge signed">已签发</span></td>
+                                <td>2026-03-24 14:30</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewReport('RPT202603240001')" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon download" onclick="downloadReport('RPT202603240001')" title="下载">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteReport('RPT202603240001')" title="删除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>RPT202603240002</strong></td>
+                                <td><strong>X检字[2026]第090号</strong></td>
+                                <td><span class="status-badge review">复核中</span></td>
+                                <td>2026-03-24 15:00</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewReport('RPT202603240002')" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon download" onclick="downloadReport('RPT202603240002')" title="下载">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn-icon audit" onclick="openAuditModal('RPT202603240002')" title="审核">
+                                            <i class="fas fa-clipboard-check"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteReport('RPT202603240002')" title="删除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>RPT202603240003</strong></td>
+                                <td><strong>X检字[2026]第091号</strong></td>
+                                <td><span class="status-badge draft">草稿</span></td>
+                                <td>2026-03-24 15:30</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewReport('RPT202603240003')" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon download" onclick="downloadReport('RPT202603240003')" title="下载">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn-icon audit" onclick="openAuditModal('RPT202603240003')" title="审核">
+                                            <i class="fas fa-clipboard-check"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteReport('RPT202603240003')" title="删除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>RPT202603240004</strong></td>
+                                <td><strong>X检字[2026]第092号</strong></td>
+                                <td><span class="status-badge rejected">已驳回</span></td>
+                                <td>2026-03-24 16:00</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewReport('RPT202603240004')" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon download" onclick="downloadReport('RPT202603240004')" title="下载">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn-icon audit" onclick="openAuditModal('RPT202603240004')" title="重新提交审核">
+                                            <i class="fas fa-clipboard-check"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteReport('RPT202603240004')" title="删除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Modal -->
+    <div id="auditModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-clipboard-check"></i>
+                    报告审核
+                </h3>
+                <button class="modal-close" onclick="closeAuditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Review Progress -->
+                <div class="review-progress">
+                    <div class="progress-title">
+                        <i class="fas fa-tasks"></i>
+                        审核流程
+                    </div>
+                    <div class="progress-steps">
+                        <div class="progress-step completed" id="step-draft">
+                            <div class="step-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="step-label">草稿</div>
+                            <div class="step-status">已完成</div>
+                            <div class="step-time">2026-03-24 15:30</div>
+                        </div>
+                        <div class="progress-step active" id="step-review">
+                            <div class="step-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="step-label">复核</div>
+                            <div class="step-status">进行中</div>
+                            <div class="step-time">2026-03-24 15:35</div>
+                        </div>
+                        <div class="progress-step" id="step-signed">
+                            <div class="step-icon">
+                                <i class="fas fa-signature"></i>
+                            </div>
+                            <div class="step-label">授权签字</div>
+                            <div class="step-status">待处理</div>
+                            <div class="step-time">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Form -->
+                <div class="audit-form">
+                    <h4 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">
+                        <i class="fas fa-edit"></i>
+                        审核意见
+                    </h4>
+                    <div class="form-group">
+                        <label>审核人 <span class="required">*</span></label>
+                        <input type="text" class="form-control" value="李明" readonly>
+                    </div>
+                    <div class="form-row" style="margin-top: 16px;">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>审核意见 <span class="required">*</span></label>
+                            <textarea class="form-control" id="auditComment" placeholder="请输入审核意见..."></textarea>
+                        </div>
+                    </div>
+                    <div class="audit-actions">
+                        <button class="btn btn-secondary" onclick="rejectReport()">
+                            <i class="fas fa-times"></i>
+                            驳回
+                        </button>
+                        <button class="btn btn-primary" onclick="passReport()">
+                            <i class="fas fa-check"></i>
+                            通过
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Report Details -->
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">报告ID</div>
+                        <div class="detail-value"><strong>RPT202603240003</strong></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">报告编号</div>
+                        <div class="detail-value">X检字[2026]第091号</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">委托单位</div>
+                        <div class="detail-value">广州市公安局</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">受理编号</div>
+                        <div class="detail-value">SL202603240001</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAuditModal()">
+                    <i class="fas fa-times"></i>
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Report Modal -->
+    <div id="createReportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-file-alt"></i>
+                    生成报告
+                </h3>
+                <button class="modal-close" onclick="closeCreateModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">报告ID</div>
+                        <div class="detail-value"><strong>RPT202603240005</strong></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">受理编号</div>
+                        <div class="detail-value">SL202603240001</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">报告状态</div>
+                        <div class="detail-value"><span class="status-badge draft">草稿</span></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">生成时间</div>
+                        <div class="detail-value">2026-03-24 16:30</div>
+                    </div>
+                </div>
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-file-pdf" style="font-size: 64px; color: var(--primary-color); margin-bottom: 16px;"></i>
+                    <p style="color: var(--text-secondary);">PDF报告已自动生成，状态为"草稿"</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCreateModal()">
+                    <i class="fas fa-times"></i>
+                    取消
+                </button>
+                <button class="btn btn-primary" onclick="submitForReview()">
+                    <i class="fas fa-paper-plane"></i>
+                    提交审核
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentReportId = null;
+
+        // Audit Modal
+        function openAuditModal(reportId) {
+            currentReportId = reportId;
+            document.getElementById('auditModal').classList.add('show');
+        }
+
+        function closeAuditModal() {
+            document.getElementById('auditModal').classList.remove('show');
+            document.getElementById('auditComment').value = '';
+            currentReportId = null;
+        }
+
+        function passReport() {
+            const comment = document.getElementById('auditComment').value;
+            if (!comment.trim()) {
+                alert('请输入审核意见');
+                return;
+            }
+            if (confirm('确定要通过此报告的审核吗？')) {
+                alert('报告审核通过！');
+                closeAuditModal();
+            }
+        }
+
+        function rejectReport() {
+            const comment = document.getElementById('auditComment').value;
+            if (!comment.trim()) {
+                alert('请输入驳回原因');
+                return;
+            }
+            if (confirm('确定要驳回此报告吗？')) {
+                alert('报告已驳回');
+                closeAuditModal();
+            }
+        }
+
+        // Create Report Modal
+        function openCreateModal() {
+            document.getElementById('createReportModal').classList.add('show');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createReportModal').classList.remove('show');
+        }
+
+        function submitForReview() {
+            if (confirm('确定要将报告提交审核吗？')) {
+                alert('报告已提交审核，状态变更为"复核中"');
+                closeCreateModal();
+            }
+        }
+
+        // View report
+        function viewReport(reportId) {
+            alert(`查看报告：${reportId}`);
+        }
+
+        // Download report
+        function downloadReport(reportId) {
+            alert(`正在下载报告PDF：${reportId}`);
+        }
+
+        // Delete report
+        function deleteReport(reportId) {
+            if (confirm(`确定要删除报告 ${reportId} 吗？`)) {
+                alert(`报告 ${reportId} 已删除`);
+            }
+        }
+
+        // Search reports
+        function searchReports() {
+            alert('正在查询报告数据...');
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.querySelectorAll('.filter-section input, .filter-section select').forEach(input => {
+                input.value = '';
+            });
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            const auditModal = document.getElementById('auditModal');
+            const createModal = document.getElementById('createReportModal');
+            if (event.target === auditModal) {
+                closeAuditModal();
+            }
+            if (event.target === createModal) {
+                closeCreateModal();
+            }
+        }
+    </script>
+</body>
+</html>

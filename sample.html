@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>样品管理 - 血液乙醇检验实验室管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0891B2;
+            --primary-light: #22D3EE;
+            --primary-dark: #164E63;
+            --success-color: #059669;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --info-color: #3B82F6;
+            --bg-primary: #ECFEFF;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F1F5F9;
+            --text-primary: #0F172A;
+            --text-secondary: #334155;
+            --text-tertiary: #64748B;
+            --border-color: #E2E8F0;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ECFEFF 0%, #F0F9FF 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-section {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .logo-section h1 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-section p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .menu-container {
+            padding: 16px 0;
+            flex: 1;
+        }
+
+        .menu-section {
+            margin-bottom: 24px;
+        }
+
+        .menu-title {
+            padding: 8px 24px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary-color);
+            border-left-color: var(--primary-light);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(90deg, rgba(8, 145, 178, 0.1) 0%, transparent 100%);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: var(--danger-color);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px 32px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header h2 i {
+            color: var(--primary-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: 0 2px 4px rgba(8, 145, 178, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(8, 145, 178, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* Table Section */
+        .table-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .table-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Nested Table Styles */
+        .parent-row {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+        }
+
+        .parent-row td {
+            background: var(--bg-tertiary);
+        }
+
+        .child-row {
+            padding-left: 40px;
+            background: var(--bg-secondary);
+        }
+
+        .expand-icon {
+            margin-right: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-badge.processing {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+        }
+
+        .status-badge.completed {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-badge.testing {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8B5CF6;
+        }
+
+        .status-badge.abnormal {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .abnormal-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        .abnormal-tag i {
+            font-size: 10px;
+        }
+
+        tr.row-abnormal td {
+            background: rgba(239, 68, 68, 0.03);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .btn-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-icon.view:hover {
+            background: var(--info-color);
+            border-color: var(--info-color);
+        }
+
+        .btn-icon.video:hover {
+            background: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-icon.retest:hover {
+            background: var(--warning-color);
+            border-color: var(--warning-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 24px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: -9px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            z-index: 1;
+        }
+
+        .timeline-icon.completed {
+            background: var(--success-color);
+        }
+
+        .timeline-icon.current {
+            background: var(--info-color);
+        }
+
+        .timeline-content {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin-top: 8px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timeline-info {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .timeline-video {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timeline-video-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .timeline-video-btn:hover {
+            background: #DC2626;
+            transform: translateY(-2px);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .detail-item {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: var(--radius-md);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .detail-value strong {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: var(--bg-tertiary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-section">
+                <h1>
+                    <i class="fas fa-flask"></i>
+                    血液乙醇检验<br>实验室管理系统
+                </h1>
+                <p>Blood Alcohol Testing Laboratory Management System</p>
+            </div>
+
+            <div class="menu-container">
+                <div class="menu-section">
+                    <div class="menu-title">检验流程</div>
+                    <a class="menu-item" href="reception.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>收检管理</span>
+                    </a>
+                    <a class="menu-item" href="preprocess.html">
+                        <i class="fas fa-cogs"></i>
+                        <span>前置处理</span>
+                    </a>
+                    <a class="menu-item active" href="sample.html">
+                        <i class="fas fa-vial"></i>
+                        <span>样品管理</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">审核与报告</div>
+                    <a class="menu-item" href="analysis.html">
+                        <i class="fas fa-microscope"></i>
+                        <span>结果审核</span>
+                    </a>
+                    <a class="menu-item" href="report.html">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>报告管理</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">系统管理</div>
+                    <a class="menu-item" href="user.html">
+                        <i class="fas fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                    <a class="menu-item" href="role.html">
+                        <i class="fas fa-user-shield"></i>
+                        <span>角色管理</span>
+                    </a>
+                    <a class="menu-item" href="permission.html">
+                        <i class="fas fa-key"></i>
+                        <span>权限管理</span>
+                    </a>
+                    <a class="menu-item" href="operation_log.html">
+                        <i class="fas fa-history"></i>
+                        <span>操作日志</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-vial"></i>
+                    样品管理
+                </h2>
+                <div class="header-actions">
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label>委托编码</label>
+                        <input type="text" class="form-control" placeholder="输入委托编码">
+                    </div>
+                    <div class="form-group">
+                        <label>受理编号</label>
+                        <input type="text" class="form-control" placeholder="输入受理编号">
+                    </div>
+                    <div class="form-group">
+                        <label>案事件名称</label>
+                        <input type="text" class="form-control" placeholder="输入案事件名称">
+                    </div>
+                    <div class="form-group">
+                        <label>样品状态</label>
+                        <select class="form-control">
+                            <option value="">全部</option>
+                            <option value="pending">待收检</option>
+                            <option value="processing">处理中</option>
+                            <option value="testing">检测中</option>
+                            <option value="completed">已完成</option>
+                            <option value="abnormal">异常</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-secondary" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i>
+                        重置
+                    </button>
+                    <button class="btn btn-primary" onclick="searchSamples()">
+                        <i class="fas fa-search"></i>
+                        查询
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>样品列表</h3>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;"></th>
+                                <th>受理编号</th>
+                                <th>样品编号</th>
+                                <th>样品类型</th>
+                                <th>数量</th>
+                                <th>当前环节</th>
+                                <th>受理时间</th>
+                                <th>状态</th>
+                                <th>异常状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sampleTable">
+                            <!-- Parent Row 1 -->
+                            <tr class="parent-row" onclick="toggleExpand('group1')">
+                                <td>
+                                    <i class="fas fa-chevron-right expand-icon" id="icon-group1"></i>
+                                </td>
+                                <td><strong>SL202603240001</strong></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td><span class="status-badge processing">部分检测</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <!-- Child Rows 1 -->
+                            <tr class="child-row" id="group1" style="display: none;">
+                                <td></td>
+                                <td>SL202603240001</td>
+                                <td>202603240001</td>
+                                <td>血液</td>
+                                <td>5mL</td>
+                                <td><strong style="color: var(--info-color);">前置处理</strong></td>
+                                <td>2026-03-24 10:00</td>
+                                <td><span class="status-badge processing">处理中</span></td>
+                                <td>-</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewSample('202603240001')" title="查看详情">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon retest" onclick="retestSample('202603240001')" title="重新检测">
+                                            <i class="fas fa-redo"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="child-row" id="group1" style="display: none;">
+                                <td></td>
+                                <td>SL202603240001</td>
+                                <td>202603240002</td>
+                                <td>血液</td>
+                                <td>5mL</td>
+                                <td><strong style="color: var(--success-color);">已完成</strong></td>
+                                <td>2026-03-24 10:05</td>
+                                <td><span class="status-badge completed">已完成</span></td>
+                                <td>-</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewSample('202603240002')" title="查看详情">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon retest" onclick="retestSample('202603240002')" title="重新检测">
+                                            <i class="fas fa-redo"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Parent Row 2 -->
+                            <tr class="parent-row" onclick="toggleExpand('group2')">
+                                <td>
+                                    <i class="fas fa-chevron-right expand-icon" id="icon-group2"></i>
+                                </td>
+                                <td><strong>SL202603240002</strong></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td><span class="status-badge pending">待处理</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <!-- Child Rows 2 -->
+                            <tr class="child-row" id="group2" style="display: none;">
+                                <td></td>
+                                <td>SL202603240002</td>
+                                <td>202603240003</td>
+                                <td>血液</td>
+                                <td>5mL</td>
+                                <td><strong style="color: var(--warning-color);">待收检</strong></td>
+                                <td>2026-03-24 11:00</td>
+                                <td><span class="status-badge pending">待收检</span></td>
+                                <td>-</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewSample('202603240003')" title="查看详情">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon retest" onclick="retestSample('202603240003')" title="重新检测">
+                                            <i class="fas fa-redo"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Parent Row 3 - 含异常 -->
+                            <tr class="parent-row" onclick="toggleExpand('group3')">
+                                <td>
+                                    <i class="fas fa-chevron-right expand-icon" id="icon-group3"></i>
+                                </td>
+                                <td><strong>SL202603240003</strong></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td><span class="status-badge abnormal">异常</span></td>
+                                <td><span class="abnormal-tag"><i class="fas fa-exclamation-circle"></i>曲线未达标</span></td>
+                                <td>-</td>
+                            </tr>
+                            <!-- Child Rows 3 -->
+                            <tr class="child-row row-abnormal" id="group3" style="display: none;">
+                                <td></td>
+                                <td>SL202603240003</td>
+                                <td>202603240004</td>
+                                <td>血液</td>
+                                <td>5mL</td>
+                                <td><strong style="color: var(--danger-color);">检测异常</strong></td>
+                                <td>2026-03-24 14:00</td>
+                                <td><span class="status-badge abnormal">异常</span></td>
+                                <td><span class="abnormal-tag"><i class="fas fa-exclamation-circle"></i>曲线未达标</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewSample('202603240004')" title="查看详情">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon retest" onclick="retestSample('202603240004')" title="重新检测">
+                                            <i class="fas fa-redo"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="child-row" id="group3" style="display: none;">
+                                <td></td>
+                                <td>SL202603240003</td>
+                                <td>202603240005</td>
+                                <td>血液</td>
+                                <td>5mL</td>
+                                <td><strong style="color: var(--success-color);">已完成</strong></td>
+                                <td>2026-03-24 14:05</td>
+                                <td><span class="status-badge completed">已完成</span></td>
+                                <td>-</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon view" onclick="viewSample('202603240005')" title="查看详情">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon retest" onclick="retestSample('202603240005')" title="重新检测">
+                                            <i class="fas fa-redo"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-vial"></i>
+                    样品详情
+                </h3>
+                <button class="modal-close" onclick="closeDetailModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">样品编号</div>
+                        <div class="detail-value"><strong>202603240001</strong></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">受理编号</div>
+                        <div class="detail-value">SL202603240001</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">样品类型</div>
+                        <div class="detail-value">血液</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">样品数量</div>
+                        <div class="detail-value">5mL</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">受理人</div>
+                        <div class="detail-value">李明</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">受理时间</div>
+                        <div class="detail-value">2026-03-24 10:00</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">批次号</div>
+                        <div class="detail-value">PC20260324001</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">当前环节</div>
+                        <div class="detail-value"><strong style="color: var(--info-color);">前置处理</strong></div>
+                    </div>
+                </div>
+
+                <h4 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">
+                    <i class="fas fa-history"></i>
+                    样品生命周期
+                </h4>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="timeline-title">样品收检</div>
+                        <div class="timeline-content">
+                            <div class="timeline-info">受理人：李明</div>
+                            <div class="timeline-info">样品类型：血液</div>
+                            <div class="timeline-info">样品数量：5mL</div>
+                            <div class="timeline-time">2026-03-24 10:00</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="timeline-title">前置处理</div>
+                        <div class="timeline-content">
+                            <div class="timeline-info">批次号：PC20260324001</div>
+                            <div class="timeline-info">处理方法：GB/T 4230-2023</div>
+                            <div class="timeline-info">操作员：张三</div>
+                            <div class="timeline-time">2026-03-24 10:15</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon current">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="timeline-title">分析检测</div>
+                        <div class="timeline-content">
+                            <div class="timeline-info">检测人：张三</div>
+                            <div class="timeline-info">检测方法：GB/T 4230-2023</div>
+                            <div class="timeline-info">仪器编号：GC-001</div>
+                            <div class="timeline-time">2026-03-24 11:00</div>
+                            <div class="timeline-video">
+                                <a href="#" class="timeline-video-btn" onclick="playVideo()">
+                                    <i class="fas fa-play"></i>
+                                    查看检验过程视频
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="timeline-title">结果审核</div>
+                        <div class="timeline-content">
+                            <div class="timeline-info">审核人：赵六</div>
+                            <div class="timeline-info">审核状态：待审核</div>
+                            <div class="timeline-time">等待中</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="timeline-title">报告生成</div>
+                        <div class="timeline-content">
+                            <div class="timeline-info">报告状态：待生成</div>
+                            <div class="timeline-time">等待中</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailModal()">
+                    <i class="fas fa-times"></i>
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle expand
+        function toggleExpand(groupId) {
+            const icon = document.getElementById(`icon-${groupId}`);
+            const rows = document.querySelectorAll(`tr#${groupId}`);
+            const isExpanded = icon.classList.contains('expanded');
+
+            if (isExpanded) {
+                icon.classList.remove('expanded');
+                rows.forEach(row => row.style.display = 'none');
+            } else {
+                icon.classList.add('expanded');
+                rows.forEach(row => row.style.display = '');
+            }
+        }
+
+        // Detail modal
+        function viewSample(sampleId) {
+            document.getElementById('detailModal').classList.add('show');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+
+        // View video
+        function viewVideo(sampleId) {
+            alert(`正在打开样品 ${sampleId} 的检验过程视频...`);
+        }
+
+        // Play video from detail modal
+        function playVideo() {
+            alert('正在播放检验过程视频...');
+        }
+
+        // Retest sample
+        function retestSample(sampleId) {
+            if (confirm(`确定要将样品 ${sampleId} 重新进入检测流程吗？`)) {
+                alert(`样品 ${sampleId} 已重新进入检测流程`);
+            }
+        }
+
+        // Search samples
+        function searchSamples() {
+            alert('正在查询样品数据...');
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.querySelectorAll('.filter-section input, .filter-section select').forEach(input => {
+                input.value = '';
+            });
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            const detailModal = document.getElementById('detailModal');
+            if (event.target === detailModal) {
+                closeDetailModal();
+            }
+        }
+    </script>
+</body>
+</html>
