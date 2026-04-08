@@ -611,6 +611,89 @@
             color: var(--text-secondary);
         }
 
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .page-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--bg-primary);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .page-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .page-num {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            padding: 0 6px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-num:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .page-num.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .page-info {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-left: 4px;
+        }
+
         /* Status Check */
         .status-check {
             display: flex;
@@ -801,7 +884,7 @@
                     批次管理
                 </h2>
                 <div class="header-actions">
-                    <button class="btn btn-primary" onclick="openModal()">
+                    <button class="btn btn-primary" onclick="openModal('create')">
                         <i class="fas fa-plus"></i>
                         新增批次
                     </button>
@@ -814,15 +897,6 @@
                     <div class="form-group">
                         <label>批次编号</label>
                         <input type="text" class="form-control" placeholder="输入批次编号">
-                    </div>
-                    <div class="form-group">
-                        <label>优先级</label>
-                        <select class="form-control">
-                            <option value="">全部</option>
-                            <option value="high">高</option>
-                            <option value="medium">中</option>
-                            <option value="low">低</option>
-                        </select>
                     </div>
                 </div>
                 <div class="filter-actions">
@@ -926,7 +1000,7 @@
     <div id="batchModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>
+                <h3 id="modalTitle">
                     <i class="fas fa-cogs"></i>
                     新增批次
                 </h3>
@@ -936,39 +1010,6 @@
             </div>
             <div class="modal-body">
                 <form id="batchForm">
-                    <!-- 批次基础信息 -->
-                    <div class="form-section">
-                        <div class="form-section-title">
-                            <i class="fas fa-info-circle"></i>
-                            批次基础信息
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>批次号 <span class="required">*</span></label>
-                                <input type="text" class="form-control" id="批次号" placeholder="系统自动生成" disabled value="PC202603240001">
-                            </div>
-                            <div class="form-group">
-                                <label>创建人 <span class="required">*</span></label>
-                                <input type="text" class="form-control" id="创建人" placeholder="当前登录用户" disabled value="操作员A">
-                            </div>
-                            <div class="form-group">
-                                <label>状态 <span class="required">*</span></label>
-                                <select class="form-control" id="状态">
-                                    <option value="pending" selected>待配置</option>
-                                    <option value="configuring">配置中</option>
-                                    <option value="ready">待执行</option>
-                                    <option value="running">执行中</option>
-                                    <option value="completed">已完成</option>
-                                    <option value="cancelled">已取消</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>样品数量 <span class="required">*</span></label>
-                                <input type="number" class="form-control" id="样品数量" value="0" disabled>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- 样品选择 -->
                     <div class="form-section">
                         <div class="form-section-title">
@@ -979,50 +1020,30 @@
                             <!-- 待检样品列表 -->
                             <div class="column-section">
                                 <div class="column-header">
-                                    <h4>待检样品（共5个）</h4>
+                                    <h4>待检样品（共<span id="totalCount">12</span>个）</h4>
                                 </div>
                                 <table class="sub-table">
                                     <thead>
                                         <tr>
-                                            <th style="width: 50px;">选择</th>
+                                            <th style="width: 50px;"><input type="checkbox" id="selectAllPending" onchange="toggleSelectAll()"></th>
                                             <th>受理编号</th>
                                             <th>样品编号</th>
                                             <th>检测人</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="pendingSamples">
-                                        <tr>
-                                            <td><input type="checkbox" onchange="updateSampleCount()"></td>
-                                            <td>SL202603240001</td>
-                                            <td>202603240001</td>
-                                            <td>张三</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" onchange="updateSampleCount()"></td>
-                                            <td>SL202603240001</td>
-                                            <td>202603240002</td>
-                                            <td>李四</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" onchange="updateSampleCount()"></td>
-                                            <td>SL202603240002</td>
-                                            <td>202603240003</td>
-                                            <td>王五</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" onchange="updateSampleCount()"></td>
-                                            <td>SL202603240002</td>
-                                            <td>202603240004</td>
-                                            <td>赵六</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" onchange="updateSampleCount()"></td>
-                                            <td>SL202603240003</td>
-                                            <td>202603240005</td>
-                                            <td>孙七</td>
-                                        </tr>
-                                    </tbody>
+                                    <tbody id="pendingSamples"></tbody>
                                 </table>
+                                <!-- 分页 -->
+                                <div class="pagination" id="pendingPagination">
+                                    <button class="page-btn" id="prevBtn" onclick="changePage(-1)" disabled>
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <div class="page-numbers" id="pageNumbers"></div>
+                                    <button class="page-btn" id="nextBtn" onclick="changePage(1)">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                    <span class="page-info">共 <span id="totalPages">0</span> 页</span>
+                                </div>
                             </div>
 
                             <!-- 已选样品列表 -->
@@ -1053,6 +1074,42 @@
                                 <i class="fas fa-info-circle"></i>
                                 提示：可拖拽调整样品顺序，点击待检样品选择，点击已选样品移除
                             </p>
+                        </div>
+                    </div>
+
+                    <!-- 批次基础信息 -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-info-circle"></i>
+                            批次基础信息
+                        </div>
+                        <!-- 仅编辑/查看模式显示（新增时由后台自动生成） -->
+                        <div class="form-row" id="readonlyFields" style="display:none;">
+                            <div class="form-group">
+                                <label>批次号</label>
+                                <input type="text" class="form-control" id="批次号" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>创建人</label>
+                                <input type="text" class="form-control" id="创建人" disabled>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>状态 <span class="required">*</span></label>
+                                <select class="form-control" id="状态">
+                                    <option value="pending" selected>待配置</option>
+                                    <option value="configuring">配置中</option>
+                                    <option value="ready">待执行</option>
+                                    <option value="running">执行中</option>
+                                    <option value="completed">已完成</option>
+                                    <option value="cancelled">已取消</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>样品数量 <span class="required">*</span></label>
+                                <input type="number" class="form-control" id="样品数量" value="0" disabled>
+                            </div>
                         </div>
                     </div>
 
@@ -1092,10 +1149,6 @@
                             <label class="checkbox-item">
                                 <input type="checkbox" name="method" value="GBT4230-2023" checked>
                                 <span>GB/T 4230-2023</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="method" value="other">
-                                <span>其他方法</span>
                             </label>
                         </div>
                     </div>
@@ -1153,23 +1206,163 @@
     </div>
 
     <script>
-        // Modal functions
-        function openModal() {
-            document.getElementById('batchModal').classList.add('show');
-            generateBatchCode();
+        // 模拟批次数据
+        const batchData = {
+            'PC202603240001': { batchNo: 'PC202603240001', creator: '操作员A', status: 'completed', sampleCount: 3 },
+            'PC202603240002': { batchNo: 'PC202603240002', creator: '操作员A', status: 'running',   sampleCount: 2 },
+            'PC202603240003': { batchNo: 'PC202603240003', creator: '操作员B', status: 'pending',   sampleCount: 0 },
+        };
+
+        // 待检样品原始数据
+        const allSamples = [
+            { id: 'SL202603240001', code: '202603240001', tester: '张三' },
+            { id: 'SL202603240001', code: '202603240002', tester: '李四' },
+            { id: 'SL202603240002', code: '202603240003', tester: '王五' },
+            { id: 'SL202603240002', code: '202603240004', tester: '赵六' },
+            { id: 'SL202603240003', code: '202603240005', tester: '孙七' },
+            { id: 'SL202603240004', code: '202603240006', tester: '周八' },
+            { id: 'SL202603240004', code: '202603240007', tester: '吴九' },
+            { id: 'SL202603240005', code: '202603240008', tester: '郑十' },
+            { id: 'SL202603240005', code: '202603240009', tester: '钱一' },
+            { id: 'SL202603240006', code: '202603240010', tester: '孙二' },
+            { id: 'SL202603240006', code: '202603240011', tester: '周三' },
+            { id: 'SL202603240007', code: '202603240012', tester: '李四' },
+        ];
+
+        // 分页参数
+        const pageSize = 5;
+        let currentPage = 1;
+        let totalPages = 1;
+
+        // 初始化分页
+        function initPagination() {
+            totalPages = Math.ceil(allSamples.length / pageSize);
+            document.getElementById('totalCount').textContent = allSamples.length;
+            document.getElementById('totalPages').textContent = totalPages;
+            renderPage(currentPage);
+            renderPageNumbers();
+        }
+
+        // 渲染当前页数据
+        function renderPage(page) {
+            currentPage = page;
+            const tbody = document.getElementById('pendingSamples');
+            const start = (page - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = allSamples.slice(start, end);
+
+            tbody.innerHTML = pageData.map(s => `
+                <tr>
+                    <td><input type="checkbox" data-code="${s.code}" onchange="updateSampleCount()"></td>
+                    <td>${s.id}</td>
+                    <td>${s.code}</td>
+                    <td>${s.tester}</td>
+                </tr>
+            `).join('');
+
+            // 更新按钮状态
+            document.getElementById('prevBtn').disabled = page <= 1;
+            document.getElementById('nextBtn').disabled = page >= totalPages;
+
+            // 更新页码高亮
+            document.querySelectorAll('.page-num').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.page) === page);
+            });
+        }
+
+        // 渲染页码按钮
+        function renderPageNumbers() {
+            const container = document.getElementById('pageNumbers');
+            container.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('span');
+                btn.className = 'page-num' + (i === 1 ? ' active' : '');
+                btn.dataset.page = i;
+                btn.textContent = i;
+                btn.onclick = () => renderPage(i);
+                container.appendChild(btn);
+            }
+        }
+
+        // 翻页
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                renderPage(newPage);
+            }
+        }
+
+        // 全选当前页
+        function toggleSelectAll() {
+            const checked = document.getElementById('selectAllPending').checked;
+            document.querySelectorAll('#pendingSamples input[type="checkbox"]').forEach(cb => {
+                cb.checked = checked;
+            });
+            updateSampleCount();
+        }
+
+        // 打开模态框：mode = 'create' | 'edit' | 'view'
+        function openModal(mode, code) {
+            const modal = document.getElementById('batchModal');
+            const titleEl = document.getElementById('modalTitle');
+            const readonlyFields = document.getElementById('readonlyFields');
+            const saveBtn = document.querySelector('.modal-footer .btn-primary');
+            const execBtn = document.querySelector('.modal-footer .btn-success');
+
+            // 重置表单
+            resetForm();
+            initPagination();
+
+            if (mode === 'create') {
+                // 新增：隐藏批次号和创建人，后台自动生成；状态固定为"待配置"不可修改
+                titleEl.innerHTML = '<i class="fas fa-plus"></i> 新增批次';
+                readonlyFields.style.display = 'none';
+                document.getElementById('状态').value = 'pending';
+                document.getElementById('状态').disabled = true;
+                saveBtn.style.display = '';
+                execBtn.style.display = '';
+
+            } else if (mode === 'edit') {
+                // 编辑：显示批次号和创建人（只读），可修改其他字段（含状态）
+                titleEl.innerHTML = '<i class="fas fa-edit"></i> 编辑批次';
+                readonlyFields.style.display = '';
+                document.getElementById('状态').disabled = false;
+                const data = batchData[code] || {};
+                document.getElementById('批次号').value = data.batchNo || code;
+                document.getElementById('创建人').value = data.creator || '-';
+                document.getElementById('状态').value = data.status || 'pending';
+                document.getElementById('样品数量').value = data.sampleCount || 0;
+                saveBtn.style.display = '';
+                execBtn.style.display = '';
+
+            } else if (mode === 'view') {
+                // 查看：显示批次号和创建人（只读），所有字段只读
+                titleEl.innerHTML = '<i class="fas fa-eye"></i> 查看批次';
+                readonlyFields.style.display = '';
+                document.getElementById('状态').disabled = true;
+                const data = batchData[code] || {};
+                document.getElementById('批次号').value = data.batchNo || code;
+                document.getElementById('创建人').value = data.creator || '-';
+                document.getElementById('状态').value = data.status || 'pending';
+                document.getElementById('样品数量').value = data.sampleCount || 0;
+                // 查看模式隐藏保存和执行按钮
+                saveBtn.style.display = 'none';
+                execBtn.style.display = 'none';
+            }
+
+            modal.classList.add('show');
         }
 
         function closeModal() {
             document.getElementById('batchModal').classList.remove('show');
         }
 
-        // Generate batch code
-        function generateBatchCode() {
-            const today = new Date();
-            const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
-            const randomNum = Math.floor(Math.random() * 9000) + 1000;
-            const code = `PC${dateStr}${randomNum}`;
-            document.getElementById('批次号').value = code;
+        function resetForm() {
+            document.getElementById('状态').value = 'pending';
+            document.getElementById('样品数量').value = 0;
+            document.querySelectorAll('#pendingSamples input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('selectedSamples').innerHTML = '';
+            document.querySelectorAll('input[name="qualityControl"]').forEach(cb => cb.checked = false);
         }
 
         // Update sample count
@@ -1200,8 +1393,8 @@
                 alert('请至少选择一个样品');
                 return;
             }
-
-            if (confirm(`确定要执行批次 ${document.getElementById('批次号').value} 的检查指令吗？\n样品数量：${sampleCount}`)) {
+            const batchNo = document.getElementById('批次号') ? document.getElementById('批次号').value : '（新批次）';
+            if (confirm(`确定要执行批次 ${batchNo} 的检查指令吗？\n样品数量：${sampleCount}`)) {
                 alert('检查指令已发送，设备开始执行前处理流程...');
                 document.getElementById('状态').value = 'running';
             }
@@ -1219,14 +1412,12 @@
 
         // View batch
         function viewBatch(code) {
-            alert(`查看批次：${code}`);
-            openModal();
+            openModal('view', code);
         }
 
         // Edit batch
         function editBatch(code) {
-            alert(`编辑批次：${code}`);
-            openModal();
+            openModal('edit', code);
         }
 
         // Delete batch
